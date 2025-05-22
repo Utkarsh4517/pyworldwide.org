@@ -2,7 +2,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Newsletter from '@/components/Newsletter';
 import Link from 'next/link';
-import { upcomingEvents } from '@/data/events';
+import eventsData from '@/data/events.json';
+import React from 'react';
 
 export default function Events() {
   return (
@@ -29,44 +30,54 @@ export default function Events() {
             </div>
 
             <div className="space-y-6 mt-8">
-              {upcomingEvents.map((event) => (
-                <div 
-                  key={event.id}
-                  className="border-2 border-black rounded-lg p-6 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] 
-                    transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 bg-white"
-                >
-                  <div className="flex justify-between items-start flex-wrap gap-4">
-                    <div>
-                      <h3 className="text-xl font-bold mb-2">{event.title}</h3>
-                      <div className="space-y-1 text-gray-600">
-                        <p className="flex items-center gap-2">
-                          <span>📅</span> {new Date(event.date).toLocaleDateString('en-US', { 
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                        </p>
-                        <p className="flex items-center gap-2">
-                          <span>⏰</span> {event.time}
-                        </p>
-                        <p className="flex items-center gap-2">
-                          <span>📍</span> {event.location}
-                        </p>
+              {eventsData.map((event) => {
+                const eventDateTime = new Date(event.date);
+                const localDate = eventDateTime.toLocaleDateString(undefined, {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long', 
+                  day: 'numeric'
+                });
+                const localTime = eventDateTime.toLocaleTimeString(undefined, {
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true
+                });
+                const timeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                return (
+                  <div 
+                    key={event.id}
+                    className="border-2 border-black rounded-lg p-6 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] 
+                      transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 bg-white"
+                  >
+                    <div className="flex justify-between items-start flex-wrap gap-4">
+                      <div>
+                        <h3 className="text-xl font-bold mb-2">{event.title}</h3>
+                        <div className="space-y-1 text-gray-600">
+                          <p className="flex items-center gap-2">
+                            <span>📅</span> {localDate}
+                          </p>
+                          <p className="flex items-center gap-2">
+                            <span>⏰</span> {localTime} ({timeZoneName})
+                          </p>
+                          <p className="flex items-center gap-2">
+                            <span>📍</span> {event.location}
+                          </p>
+                        </div>
                       </div>
+                      <Link
+                        href={event.registrationLink}
+                        className="bg-yellow-300 px-6 py-2 rounded-md border-2 border-black 
+                          shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] 
+                          hover:-translate-x-1 hover:-translate-y-1 transition-all duration-300 font-bold"
+                      >
+                        Register Now
+                      </Link>
                     </div>
-                    <Link
-                      href={event.registrationLink}
-                      className="bg-yellow-300 px-6 py-2 rounded-md border-2 border-black 
-                        shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] 
-                        hover:-translate-x-1 hover:-translate-y-1 transition-all duration-300 font-bold"
-                    >
-                      Register Now
-                    </Link>
+                    <p className="mt-4 text-gray-700">{event.description}</p>
                   </div>
-                  <p className="mt-4 text-gray-700">{event.description}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
